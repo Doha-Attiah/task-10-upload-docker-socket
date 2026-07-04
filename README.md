@@ -78,7 +78,7 @@ task-10-upload-docker-socket
 ├── README.md
 ├── public/
 │   └── socket-test.html
-├── uploads/
+├── ├── uploads/ (created automatically after local upload)
 └── src/
     ├── controllers/
     │   └── upload.controller.js
