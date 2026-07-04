@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket.IO Chat Test</title>
+</head>
+<body>
+  <h2>Socket.IO Chat Test</h2>
+
+  <input id="username" placeholder="Username" />
+  <button onclick="joinChat()">Join</button>
+
+  <br><br>
+
+  <input id="message" placeholder="Message" />
+  <button onclick="sendMessage()">Send Message</button>
+  <button onclick="sendTyping()">Typing</button>
+
+  <ul id="messages"></ul>
+
+  <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+
+  <script>
+    const socket = io("http://localhost:3000");
+
+    const messages = document.getElementById("messages");
+
+    const addMessage = (text) => {
+      const li = document.createElement("li");
+      li.textContent = text;
+      messages.appendChild(li);
+    };
+
+    socket.on("connect", () => {
+      addMessage("Connected: " + socket.id);
+    });
+
+    socket.on("user-joined", (data) => {
+      addMessage(data.message);
+    });
+
+    socket.on("chat:message", (data) => {
+      addMessage(data.username + ": " + data.text);
+    });
+
+    socket.on("chat:typing", (data) => {
+      addMessage(data.message);
+    });
+
+    socket.on("user-left", (data) => {
+      addMessage(data.message);
+    });
+
+    function joinChat() {
+      const username = document.getElementById("username").value;
+
+      socket.emit("chat:join", {
+        username: username
+      });
+    }
+
+    function sendMessage() {
+      const username = document.getElementById("username").value;
+      const text = document.getElementById("message").value;
+
+      socket.emit("chat:message", {
+        username: username,
+        text: text
+      });
+    }
+
+    function sendTyping() {
+      const username = document.getElementById("username").value;
+
+      socket.emit("chat:typing", {
+        username: username
+      });
+    }
+  </script>
+</body>
+</html>
